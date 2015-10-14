@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
+<ns1:mailSvcConfig
+    xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+    xmlns:ns1='http://gets.geoint.org/mailservice/1.0'
+    xsi:schemaLocation='http://gets.geoint.org/mailservice/1.0'
+    xsi:noNamespaceSchemaLocation='http://gets.geoint.org/mailservice/1.0'>
+    <logLevel>FINE</logLevel>
+    <logFile>project.parent.basedir</logFile>
+    <maxThreads>10</maxThreads>
+    <workers>5</workers>
+    <MAIL_SMTP_PORT>25</MAIL_SMTP_PORT>
+    <Host>127.0.0.1</Host>
+    <User>login-id</User>
+    <retryAttempts>3</retryAttempts>
+    <retryCodes>101</retryCodes>
+    <retryCodes>111</retryCodes>
+    <retryCodes>420</retryCodes>
+    <retryCodes>421</retryCodes>
+    <retryCodes>422</retryCodes>
+    <retryCodes>431</retryCodes>
+    <retryCodes>432</retryCodes>
+    <retryCodes>442</retryCodes>
+    <retryCodes>446</retryCodes>
+    <retryCodes>447</retryCodes>
+    <retryCodes>449</retryCodes>
+    <retryCodes>451</retryCodes>
+    <retryCodes>452</retryCodes>
+    <Password>password</Password>
+    <MaxAttachmentSize>26214400</MaxAttachmentSize>
+    <retryProvider class="org.geoint.mail.service.retryprovider.ActiveMQRetryProvider" enabled="true">
+        <confProperties>
+            <property name="mail.service.retryProvider.retryAttempts" value ="3"/>
+            <property name="mail.service.retryProvider.retry.delay" value ="10000"/>
+            <property name="mail.retry.provider.url" value ="failover://tcp://localhost:61616"/>
+            
+            <property name="mail.service.activemq.password" value ="admin"/>
+            <property name = "mail.service.activemq.userId" value ="admin"/>
+           
+            <property name="mail.retry.consumer.clientid"  value ="ActiveMQRetryCONSUMER"/> 
+            <property name = "mail.service.consumer.queue.name" value ="RETRYQUEUE"/>  
+            
+            <property name = "mail.retry.producer.clientid" value ="ActiveMQRetryPRODUCER"/>  
+            <property name="mail.service.producer.queue.name" value ="RETRYQUEUE"/> 
+
+            <property name="mail.retry.response.clientid" value ="ActiveMQRetryRESPONSE"/> 
+            <property name="mail.service.response.queue.name" value ="RESPONSEQUEUE"/>
+            
+        </confProperties>
+    </retryProvider>
+  
+    <msgFilters>
+        <filters class="org.geoint.mail.service.filters.BodyClassificationWrapperFilter" enabled="true">
+            <confProperties>
+                <property name="mail.filter.classification" value = "PenguinsAndBunnies(P)"/>
+            </confProperties>
+        </filters>
+    </msgFilters>
+    <msgReceivers>
+        <receivers class="org.geoint.mail.service.jms.listener.MailSvcJmsListener" enabled="true">
+            <confProperties>
+                <property name="mail.svc.jms.listener.jms.url" value ="failover://tcp://localhost:61616"/>  
+                <property name="mail.svc.jms.response.handler.jms.url"  value ="failover://tcp://localhost:61616"/> 
+                <property name="mail.svc.jms.listener.consumer.clientid" value ="ConsumerClientIDMailSvJMSListener"/> 
+                <property name="mail.svc.jms.listener.consumer.queue.name" value ="MAILSVCQUEUE"/>  
+                <property name="mail.svc.jms.listener.producer.queue.name" value ="MAILSVCQUEUE"/>  
+                <property name="mail.svc.jms.listener.response.clientid" value ="JMSListenerResponseQueueListener"/>  
+                <property name="mail.svc.jms.listener.response.queue.name" value ="RESPONSEQUEUE"/> 
+                <property name="mail.service.activemq.password" value ="admin"/>  
+                <property name = " mail.service.activemq.userId" value ="admin"/>  
+            </confProperties>
+        </receivers>        
+    </msgReceivers>
+    <responseProviders>
+        <repsonseProvider class="org.geoint.mail.service.jms.listener.MailSvcJMSResponseHandler" enabled="true">
+            <confProperties>
+                <property name="mail.svc.jms.response.handler.clientid" value ="MailSvcResponseHandler"/>  
+                <property name="mail.svc.jms.response.handler.queue.name" value ="RESPONSEQUEUE"/> 
+                <property name="mail.svc.jms.response.handler.jms.url" value ="failover://tcp://localhost:61616"/>  
+                <property name="mail.service.activemq.password" value ="admin"/>  
+                <property name = " mail.service.activemq.userId" value ="admin"/> 
+            </confProperties>
+        </repsonseProvider>
+    </responseProviders>
+    
+    <mailSvcCLI class="org.geoint.mail.service.application.cli.MailSvcCommonsCLI" enabled="true">
+        <confProperties>
+            <property name="mail.service.cli.header" value ="dude"/>
+            <property name="mail.service.cli.classification" value ="Unclassified"/>
+            <property name="mail.svc.jms.listener.jms.url" value ="failover://tcp://localhost:61616"/>
+            <property name="mail.service.activemq.password" value ="admin"/>
+            <property name = "mail.service.activemq.userId" value ="admin"/>
+            <property name="mail.service.cli.id"  value ="MailSVCLIGetsV2"/> 
+            <property name = "mail.service.cli.producer.category" value ="MailMsgQueue"/>  
+            <property name = "mail.service.queue.name" value ="MailMsgQueue"/>  
+        </confProperties>
+    </mailSvcCLI>
+    
+
+    
+</ns1:mailSvcConfig>
